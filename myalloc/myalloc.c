@@ -5,7 +5,7 @@
 /* change me to 1 for more debugging information
  * change me to 0 for time testing and to clear your mind
  */
-#define DEBUG 1
+#define DEBUG 0
 
 void *__heap = NULL;
 node_t *__head = NULL;
@@ -103,11 +103,13 @@ void *first_fit(size_t req_size)
 	node_t *prev = NULL; /* if listitem is __head, then prev must be null */
 	header_t *alloc; /* a pointer to a header you can use for your allocation */
 
+	if (DEBUG) printf("Before allocation, freelist header @ %p with size %lu\n", listitem, listitem->size);
+
 	/* traverse the free list from __head! when you encounter a region that
 	 * is large enough to hold the buffer and required header, use it!
-	 * If the region is larger than you need, split the buffer into two 
+	 * If the region is larger than you need, split the buffer into two
 	 * regions: first, the region that you allocate and second, a new (smaller)
-	 * free region that goes on the free list in the same spot as the old free 
+	 * free region that goes on the free list in the same spot as the old free
 	 * list node_t.
 	 *
 	 * If you traverse the whole list and can't find space, return a null
@@ -115,10 +117,10 @@ void *first_fit(size_t req_size)
 	 *
 	 * Hints:
 	 * --> see print_freelist_from to see how to traverse a linked list
-	 * --> remember to keep track of the previous free region (prev) so 
+	 * --> remember to keep track of the previous free region (prev) so
 	 *     that, when you divide a free region, you can splice the linked
 	 *     list together (you'll either use an entire free region, so you
-	 *     point prev to what used to be next, or you'll create a new 
+	 *     point prev to what used to be next, or you'll create a new
 	 *     (smaller) free region, which should have the same prev and the next
 	 *     of the old region.
 	 * --> If you divide a region, remember to update prev's next pointer!
@@ -128,27 +130,24 @@ void *first_fit(size_t req_size)
 		prev = listitem;
 		listitem = listitem->next;
 	}
-	//prev should now hold all header
+	//After loop, prev == freelist head, listitem == NULL
 
-	//change listitem (node_t) to a new (header_t)
-	//move header so it is at bottom
+	//Now: Update the header so that it is located after the memory we want to allocat and size is reduced apropriately.
+	//Also, change old node that was the head into a header for the allocated memory. Init size and magic number.
+	__head = prev + req_size;
+	__head->size = prev->size - req_size - 16;	//New_size = Old_size - size_of_allocated_chunk - header_for_allocated_chunk
+	__head->next = NULL;
 
 	alloc = (header_t*)prev;
 	alloc->size = req_size;
 	alloc->magic = HEAPMAGIC;
 	ptr = alloc;
 
-	node_t new_node;
-	__head = &new_node;
-	__head->size = prev->size - req_size;
-	__head->next = NULL;
-
+	//Helpful Debug stuff
+	if (DEBUG) printf("After allocation:\n");
 	if (DEBUG) printf("We wanted to reserve %lu bites\n", req_size);
 	if (DEBUG) printf("There is reserved space @ %p with size %lu and magic %lu\n", alloc, alloc->size, alloc->magic);
 	if (DEBUG) printf("The freelist header is now @ %p with size %lu and points to %p\n", __head, __head->size, __head->next);
-
-	print_node(prev);
-	print_node(__head);
 
 	if (DEBUG) printf("Returning pointer: %p\n", ptr);
 	return ptr;
