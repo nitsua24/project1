@@ -5,7 +5,7 @@
 /* change me to 1 for more debugging information
  * change me to 0 for time testing and to clear your mind
  */
-#define DEBUG 0 
+#define DEBUG 1
 
 void *__heap = NULL;
 node_t *__head = NULL;
@@ -99,9 +99,6 @@ void *first_fit(size_t req_size)
 {
 	void *ptr = NULL; /* pointer to the match that we'll return */
 
-	if (DEBUG) printf("In first_fit with size: %u and freelist @ %p\n", 
-					  (unsigned)req_size, __head);
-
 	node_t *listitem = __head; /* cursor into our linked list */
 	node_t *prev = NULL; /* if listitem is __head, then prev must be null */
 	header_t *alloc; /* a pointer to a header you can use for your allocation */
@@ -127,6 +124,32 @@ void *first_fit(size_t req_size)
 	 * --> If you divide a region, remember to update prev's next pointer!
 	 */
 
+	while (listitem != NULL) {	//loop through the list
+		prev = listitem;
+		listitem = listitem->next;
+	}
+	//prev should now hold all header
+
+	//change listitem (node_t) to a new (header_t)
+	//move header so it is at bottom
+
+	alloc = (header_t*)prev;
+	alloc->size = req_size;
+	alloc->magic = HEAPMAGIC;
+	ptr = alloc;
+
+	node_t new_node;
+	__head = &new_node;
+	__head->size = prev->size - req_size;
+	__head->next = NULL;
+
+	if (DEBUG) printf("We wanted to reserve %lu bites\n", req_size);
+	if (DEBUG) printf("There is reserved space @ %p with size %lu and magic %lu\n", alloc, alloc->size, alloc->magic);
+	if (DEBUG) printf("The freelist header is now @ %p with size %lu and points to %p\n", __head, __head->size, __head->next);
+
+	print_node(prev);
+	print_node(__head);
+
 	if (DEBUG) printf("Returning pointer: %p\n", ptr);
 	return ptr;
 
@@ -139,7 +162,7 @@ void *first_fit(size_t req_size)
 
 void *myalloc(size_t size)
 {
-	if (DEBUG) printf("\nIn myalloc:\n");
+	if (DEBUG) printf("\nTrying to allocate some memory.\n");
 	void *ptr = NULL;
 
 	/* initialize the heap if it hasn't been */
