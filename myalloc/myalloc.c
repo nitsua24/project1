@@ -5,7 +5,7 @@
 /* change me to 1 for more debugging information
  * change me to 0 for time testing and to clear your mind
  */
-#define DEBUG 0
+#define DEBUG 1
 
 void *__heap = NULL;
 node_t *__head = NULL;
@@ -141,7 +141,7 @@ void *first_fit(size_t req_size)
 	alloc = (header_t*)prev;
 	alloc->size = req_size;
 	alloc->magic = HEAPMAGIC;
-	ptr = alloc;
+	ptr = (void*)alloc + 16;
 
 	//Helpful Debug stuff
 	if (DEBUG) printf("After allocation:\n");
@@ -207,7 +207,7 @@ void myfree(void *ptr)
 
 	/* free the buffer pointed to by ptr!
 	 * To do this, save the location of the old head (hint, it's __head).
-	 * Then, change the allocation header_t to a node_t. Point __head 
+	 * Then, change the allocation header_t to a node_t. Point __head
 	 * at the new node_t and update the new head's next to point to the
 	 * old head. Voila! You've just turned an allocated buffer into a
 	 * free region!
@@ -224,4 +224,12 @@ void myfree(void *ptr)
 
 	/* PROFIT!!! */
 
+
+	//node to be freed becomes head of list
+	//old head of list becomes node in the chain
+	node_t *new_node = __head;
+
+	__head = (node_t*)header;
+	__head->size = header->size;
+	__head->next = new_node;
 }
