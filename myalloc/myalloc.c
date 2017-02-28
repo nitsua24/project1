@@ -225,7 +225,7 @@ void myfree(void *ptr)
 	/* PROFIT!!! */
 
 
-	//node to be freed becomes head of list
+	//header to be freed becomes head node of list
 	//old head of list becomes node in the chain
 	node_t *new_node = __head;
 
