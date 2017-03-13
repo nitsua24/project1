@@ -5,7 +5,7 @@
 /* change me to 1 for more debugging information
  * change me to 0 for time testing and to clear your mind
  */
-#define DEBUG 1
+#define DEBUG 0
 
 void *__heap = NULL;
 node_t *__head = NULL;
@@ -48,6 +48,7 @@ inline void coalesce_freelist(node_t *listhead)
 	/* coalesce all neighboring free regions in the free list */
 
 	if (DEBUG) printf("In coalesce freelist...\n");
+	printf("In coalesce freelist...\n");
 	node_t *target = listhead;
 	node_t *node = target->next;
 	node_t *prev = target;
@@ -65,12 +66,14 @@ inline void coalesce_freelist(node_t *listhead)
 		prev = target;
 		target = target->next;
 
-		int check = (void*)prev + prev->size + 16;
-		if (DEBUG) printf("Adjacency check\n", check, (void*)target);
-		if (DEBUG) printf("Adjacency check. Does %d == %d\n", check, (void*)target);
-		if (DEBUG) printf("Adjacency check. Does %d == %d\n", check, (void*)target);
-		if (DEBUG) printf("Adjacency check. Does %d == %d\n", check, (void*)target);
-		if ((void*)prev + prev->size + 16 == (void*)target) {	//check for adjacency
+		int check = (void*)prev - prev->size * 16;
+		if (target != NULL) {
+		printf("Adjacency check\n");
+		printf("First node is at %d with size %d\n", (void*)prev, prev->size);
+		printf("Second node is at %d with size %d\n", (void*)target, target->size);
+		printf("Does %d == %d\n", check, (void*)target);
+		}
+		if ((void*)prev - prev->size * 16 == (void*)target) {	//check for adjacency
 			prev->next = target->next;
 			prev->size += target->size + 16;
 		}
