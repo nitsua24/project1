@@ -5,7 +5,7 @@
 /* change me to 1 for more debugging information
  * change me to 0 for time testing and to clear your mind
  */
-#define DEBUG 1
+#define DEBUG 0
 
 void *__heap = NULL;
 node_t *__head = NULL;
@@ -144,10 +144,10 @@ void *first_fit(size_t req_size)
 	ptr = (void*)alloc + 16;
 
 	//Helpful Debug stuff
-	if (DEBUG) printf("After allocation:\n");
-	if (DEBUG) printf("We wanted to reserve %lu bites\n", req_size);
-	if (DEBUG) printf("There is reserved space @ %p with size %lu and magic %lu\n", alloc, alloc->size, alloc->magic);
-	if (DEBUG) printf("The freelist header is now @ %p with size %lu and points to %p\n", __head, __head->size, __head->next);
+//	if (DEBUG) printf("After allocation:\n");
+//	if (DEBUG) printf("We wanted to reserve %lu bites\n", req_size);
+//	if (DEBUG) printf("There is reserved space @ %p with size %lu and magic %lu\n", alloc, alloc->size, alloc->magic);
+//	if (DEBUG) printf("The freelist header is now @ %p with size %lu and points to %p\n", __head, __head->size, __head->next);
 
 	if (DEBUG) printf("Returning pointer: %p\n", ptr);
 	return ptr;
