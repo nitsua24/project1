@@ -5,7 +5,7 @@
 /* change me to 1 for more debugging information
  * change me to 0 for time testing and to clear your mind
  */
-#define DEBUG 0
+#define DEBUG 1
 
 void *__heap = NULL;
 node_t *__head = NULL;
@@ -60,6 +60,22 @@ inline void coalesce_freelist(node_t *listhead)
 	 * --> see print_free_list_from for basic code for traversing a 
 	 *     linked list!
 	 */
+
+	while (target != NULL) {	//loop through the list
+		prev = target;
+		target = target->next;
+
+		int check = (void*)prev + prev->size + 16;
+		if (DEBUG) printf("Adjacency check\n", check, (void*)target);
+		if (DEBUG) printf("Adjacency check. Does %d == %d\n", check, (void*)target);
+		if (DEBUG) printf("Adjacency check. Does %d == %d\n", check, (void*)target);
+		if (DEBUG) printf("Adjacency check. Does %d == %d\n", check, (void*)target);
+		if ((void*)prev + prev->size + 16 == (void*)target) {	//check for adjacency
+			prev->next = target->next;
+			prev->size += target->size + 16;
+		}
+	}
+
 }
 
 void destroy_heap()
