@@ -134,14 +134,17 @@ void *first_fit(size_t req_size)
 
 	//Now: Update the header so that it is located after the memory we want to allocat and size is reduced apropriately.
 	//Also, change old node that was the head into a header for the allocated memory. Init size and magic number.
-	__head = prev + req_size;
-	__head->size = prev->size - req_size - 16;	//New_size = Old_size - size_of_allocated_chunk - header_for_allocated_chunk
-	__head->next = NULL;
 
-	alloc = (header_t*)prev;
-	alloc->size = req_size;
-	alloc->magic = HEAPMAGIC;
-	ptr = (void*)alloc + 16;
+	if (req_size <= __head->size) {	//check size is good before allocating
+		__head = prev + req_size;
+		__head->size = prev->size - req_size - 16;	//New_size = Old_size - size_of_allocated_chunk - header_for_allocated_chunk
+		__head->next = NULL;
+
+		alloc = (header_t*)prev;
+		alloc->size = req_size;
+		alloc->magic = HEAPMAGIC;
+		ptr = (void*)alloc + 16;
+	}
 
 	//Helpful Debug stuff
 //	if (DEBUG) printf("After allocation:\n");
