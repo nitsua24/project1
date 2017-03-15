@@ -5,7 +5,7 @@
 /* change me to 1 for more debugging information
  * change me to 0 for time testing and to clear your mind
  */
-#define DEBUG 1
+#define DEBUG 0
 
 void *__heap = NULL;
 node_t *__head = NULL;
@@ -127,6 +127,7 @@ void *first_fit(size_t req_size)
 	header_t *alloc; /* a pointer to a header you can use for your allocation */
 
 	if (DEBUG) printf("Before allocation, freelist header @ %p with size %lu\n", listitem, listitem->size);
+	if (DEBUG) printf("Before allocation, prev is NULL\n");
 
 	/* traverse the free list from __head! when you encounter a region that
 	 * is large enough to hold the buffer and required header, use it!
@@ -152,17 +153,24 @@ void *first_fit(size_t req_size)
 	while (listitem != NULL) {	//loop through the list
 		prev = listitem;
 		listitem = listitem->next;
+		if (req_size + 16 <= prev->size) {
+			break;
+		}
+	if (prev == NULL) printf("prev is NULL\n");
+	else if (DEBUG) printf("The prev is now @ %p with size %lu and points to %p\n", prev, prev->size, prev->next);
+	if (listitem == NULL) printf("listitem is NULL\n");
+	else if (DEBUG) printf("The listitem is now @ %p with size %lu and points to %p\n", listitem, listitem->size, listitem->next);
 	}
 	//After loop, prev == freelist head, listitem == NULL
 
 	//Now: Update the header so that it is located after the memory we want to allocat and size is reduced apropriately.
 	//Also, change old node that was the head into a header for the allocated memory. Init size and magic number.
 
-	if (DEBUG) printf("req_size is %lu and prev->size is %lu\n", req_size, __head->size);
-	if (req_size <= prev->size) {	//check size is good before allocating
+	if (DEBUG) printf("req_size is %lu and prev->size is %lu\n", req_size, prev->size);
+	if (req_size + 16 <= prev->size) {
 		__head = prev + req_size;
 		__head->size = prev->size - req_size - 16;	//New_size = Old_size - size_of_allocated_chunk - header_for_allocated_chunk
-		__head->next = NULL;
+		__head->next = prev->next;
 
 		alloc = (header_t*)prev;
 		alloc->size = req_size;
@@ -172,7 +180,7 @@ void *first_fit(size_t req_size)
 	//Helpful Debug stuff
 	if (DEBUG) printf("After allocation:\n");
 	if (DEBUG) printf("We wanted to reserve %lu bites\n", req_size);
-	if (DEBUG) printf("There is reserved space @ %p with size %lu and magic %lu\n", alloc, alloc->size, alloc->magic);
+	if (DEBUG) printf("There is reserved space @ %p with size %lu and magic %08lx\n", alloc, alloc->size, alloc->magic);
 	if (DEBUG) printf("The freelist header is now @ %p with size %lu and points to %p\n", __head, __head->size, __head->next);
 
 	}
