@@ -6,6 +6,9 @@
  * change me to 0 for time testing and to clear your mind
  */
 #define DEBUG 0
+#define MALLOC 0
+#define FREE 0
+#define COALESCE 1
 
 void *__heap = NULL;
 node_t *__head = NULL;
@@ -47,34 +50,30 @@ inline void coalesce_freelist(node_t *listhead)
 {
 	/* coalesce all neighboring free regions in the free list */
 
-	if (DEBUG) printf("In coalesce freelist...\n");
-	node_t *target = listhead;
+	if (COALESCE) printf("In coalesce freelist...\n");
+	node_t *target = listhead;	//lock
 	node_t *node = target->next;
 	node_t *prev = target;
 
-	/* traverse the free list, coalescing neighboring regions!
-	 * some hints:
-	 * --> it might be easier if you sort the free list first!
-	 * --> it might require multiple passes over the free list!
-	 * --> it might be easier if you call some helper functions from here
-	 * --> see print_free_list_from for basic code for traversing a
-	 *     linked list!
-	 */
+	if (COALESCE) {
+		printf("Before Sorting, head is @ %p with size %lu and points to %p\n", target, target->size, target->next);
+		print_freelist_from(target);
+	}
+	target = sort(target);	//lock
+	if (COALESCE) {
+		printf("After Sorting, head is @ %p with size %lu and points to %p\n", target, target->size, target->next);
+		print_freelist_from(target);
+	}
 
-	if (DEBUG) printf("UNsorted head is @ %p with size %lu and points to %p\n", target, target->size, target->next);
-	target = sort(target);
-	if (DEBUG) printf("sorted head is @ %p with size %lu and points to %p\n", target, target->size, target->next);
-
-	node = target->next;
+	node = target->next;	//need to reassign cause sort may have changed these
 	prev = target;
 
-	while (node != NULL) {	//loop through the list
-		int check = (void*)target + target->size * 16;
-		if (DEBUG) printf("target + size * 16 = %d and node = %d\n", check, node);
-		if ((void*)target + target->size * 16 == (void*)node) {	//check for adjacency
-			target->next = node->next;
+	while (node != NULL) {	//loop through the list		//lock
+		int check = (void*)target + target->size + 16;
+		if (COALESCE) printf("target + size + 16 = %d and node = %d\n", check, node);
+		if ((void*)target + target->size + 16 == (void*)node) {	//check for adjacency
+			target->next = node->next;	//adjacent nodes are combined
 			target->size += node->size + 16;
-			if (DEBUG) printf("coalesced space is  @ %p with size %lu and points to %p\n", target, target->size, target->next);
 			__head = target;
 		}
 		prev = target;
@@ -122,70 +121,62 @@ void *first_fit(size_t req_size)
 {
 	void *ptr = NULL; /* pointer to the match that we'll return */
 
-	node_t *listitem = __head; /* cursor into our linked list */
+	node_t *listitem = __head; /* cursor into our linked list */	//lock
 	node_t *prev = NULL; /* if listitem is __head, then prev must be null */
 	header_t *alloc; /* a pointer to a header you can use for your allocation */
 
-	if (DEBUG) printf("Before allocation, freelist header @ %p with size %lu\n", listitem, listitem->size);
-	if (DEBUG) printf("Before allocation, prev is NULL\n");
+	if (MALLOC) {
+		printf("Before allocation:\n");
+		print_freelist_from(__head);
+	}
 
-	/* traverse the free list from __head! when you encounter a region that
-	 * is large enough to hold the buffer and required header, use it!
-	 * If the region is larger than you need, split the buffer into two
-	 * regions: first, the region that you allocate and second, a new (smaller)
-	 * free region that goes on the free list in the same spot as the old free
-	 * list node_t.
-	 *
-	 * If you traverse the whole list and can't find space, return a null
-	 * pointer! :(
-	 *
-	 * Hints:
-	 * --> see print_freelist_from to see how to traverse a linked list
-	 * --> remember to keep track of the previous free region (prev) so
-	 *     that, when you divide a free region, you can splice the linked
-	 *     list together (you'll either use an entire free region, so you
-	 *     point prev to what used to be next, or you'll create a new
-	 *     (smaller) free region, which should have the same prev and the next
-	 *     of the old region.
-	 * --> If you divide a region, remember to update prev's next pointer!
-	 */
-
-	while (listitem != NULL) {	//loop through the list
-		prev = listitem;
-		listitem = listitem->next;
-		if (req_size + 16 <= prev->size) {
+	while (listitem->next != NULL) {	//loop through the free list	//lock
+		if (req_size <= listitem->size) {	//stop if an appropriate sized node is found
 			break;
 		}
-	if (prev == NULL) printf("prev is NULL\n");
-	else if (DEBUG) printf("The prev is now @ %p with size %lu and points to %p\n", prev, prev->size, prev->next);
-	if (listitem == NULL) printf("listitem is NULL\n");
-	else if (DEBUG) printf("The listitem is now @ %p with size %lu and points to %p\n", listitem, listitem->size, listitem->next);
+		prev = listitem;
+		listitem = listitem->next;
 	}
-	//After loop, prev == freelist head, listitem == NULL
 
-	//Now: Update the header so that it is located after the memory we want to allocat and size is reduced apropriately.
-	//Also, change old node that was the head into a header for the allocated memory. Init size and magic number.
+	int leftovers = listitem->size - req_size;	//Will there be any remaining bites after allocation?
+	if (MALLOC) printf("We want to reserve %lu bites, selected node has %lu bites, and there are %d bites leftover.\n", req_size, listitem->size, leftovers);
+	if ((leftovers < 16) && (leftovers > 0)) {	//there is leftover memory too small for a new free list node
+		__head = listitem->next;	//next node in free list becomes the head
 
-	if (DEBUG) printf("req_size is %lu and prev->size is %lu\n", req_size, prev->size);
-	if (req_size + 16 <= prev->size) {
-		__head = prev + req_size;
-		__head->size = prev->size - req_size - 16;	//New_size = Old_size - size_of_allocated_chunk - header_for_allocated_chunk
-		__head->next = prev->next;
+		alloc = (header_t*)listitem;		//current node is transformed into allocated memory head
+		alloc->size = req_size + leftovers;	//add leftovers to size, will be slightly bigger but wont lose nodes
+		alloc->magic = HEAPMAGIC;
+		ptr = (void*)alloc + 16;
 
-		alloc = (header_t*)prev;
+		//Helpful Debug stuff
+		if (MALLOC) {
+			printf("After allocation:\n");
+			printf("There is reserved space @ %p with size %lu and magic %08lx\n", alloc, alloc->size, alloc->magic);
+			print_freelist_from(__head);
+		}
+	}
+	else if (req_size + 16 <= listitem->size) {		//normal allocation
+		__head = (void *)listitem + req_size + 16;	//lock
+		__head->size = listitem->size - req_size - 16;	//Head needs to move from old free list node past allocated header and past actual allocated space
+		__head->next = listitem->next;	//hook new node into list
+
+		alloc = (header_t*)listitem;	//current node is transformed into allocated memory head
 		alloc->size = req_size;
 		alloc->magic = HEAPMAGIC;
 		ptr = (void*)alloc + 16;
 
-	//Helpful Debug stuff
-	if (DEBUG) printf("After allocation:\n");
-	if (DEBUG) printf("We wanted to reserve %lu bites\n", req_size);
-	if (DEBUG) printf("There is reserved space @ %p with size %lu and magic %08lx\n", alloc, alloc->size, alloc->magic);
-	if (DEBUG) printf("The freelist header is now @ %p with size %lu and points to %p\n", __head, __head->size, __head->next);
-
+		//Helpful Debug stuff
+		if (MALLOC) {
+			printf("After allocation:\n");
+			printf("There is reserved space @ %p with size %lu and magic %08lx\n", alloc, alloc->size, alloc->magic);
+			print_freelist_from(__head);
+		}
+	}
+	else {
+		//Incorrect size, do nothing so that NULL is returned
 	}
 
-	if (DEBUG) printf("Returning pointer: %p\n", ptr);
+	if (MALLOC) printf("Returning pointer: %p\n", ptr);
 	return ptr;
 
 }
@@ -197,22 +188,21 @@ void *first_fit(size_t req_size)
 
 void *myalloc(size_t size)
 {
-	if (DEBUG) printf("\nTrying to allocate some memory.\n");
+	if (MALLOC) printf("\nTrying to allocate some memory.\n");	//originally DEBUG
 	void *ptr = NULL;
 
 	/* initialize the heap if it hasn't been */
 	if (__heap == NULL) {
-		if (DEBUG) printf("*** Heap is NULL: Initializing ***\n");
+		if (MALLOC) printf("*** Heap is NULL: Initializing ***\n");	//originally DEBUG
 		init_heap();
 	}
 
 	/* perform allocation */
 	/* search __head for first fit */
-	if (DEBUG) printf("Going to do allocation.\n");
 
 	ptr = first_fit(size); /* all the work really happens in first_fit */
 
-	if (DEBUG) printf("__head is now @ %p\n", __head);
+	if (MALLOC) printf("__head is now @ %p\n", __head);	//originally DEBUG
 
 	return ptr;
 
@@ -227,11 +217,11 @@ void *myalloc(size_t size)
 void myfree(void *ptr)
 {
 
-	if (DEBUG) printf("\nIn myfree with pointer %p\n", ptr);
+	if (FREE) printf("\nIn myfree with pointer %p\n", ptr);
 
 	header_t *header = get_header(ptr); /* get the start of a header from a pointer */
 
-	if (DEBUG) { print_header(header); }
+	if (FREE) { print_header(header); }
 
 	if (header->magic != HEAPMAGIC) {
 		printf("Header is missing its magic number!!\n");
@@ -241,36 +231,19 @@ void myfree(void *ptr)
 		return;
 	}
 
-	/* free the buffer pointed to by ptr!
-	 * To do this, save the location of the old head (hint, it's __head).
-	 * Then, change the allocation header_t to a node_t. Point __head
-	 * at the new node_t and update the new head's next to point to the
-	 * old head. Voila! You've just turned an allocated buffer into a
-	 * free region!
-	 */
+	node_t *new_node = __head;	//old head of list becomes new node in chain	//lock
 
-	/* save the current __head of the freelist */
-	/* ??? */
-
-	/* now set the __head to point to the header_t for the buffer being freed */
-	/* ??? */
-
-	/* set the new head's next to point to the old head that you saved */
-	/* ??? */
-
-	/* PROFIT!!! */
-
-
-	//header to be freed becomes head node of list
-	//old head of list becomes node in the chain
-	node_t *new_node = __head;
-
-	__head = (node_t*)header;
+	__head = (node_t*)header;	//header of allocated memory becomes head of list	//lock
 	__head->size = header->size;
-	__head->next = new_node;
+	__head->next = new_node;	//hook into free list
 }
 
-void *sort(node_t* ptr) {
+/*
+ * A helper function to sort the free list.
+ * @ param ptr is the head of the current free list
+ * After running the list is reordered from largest to smallest
+ */
+void *sort(node_t* ptr) {	//lock
 	//sort the list starting with head which is target
 	node_t *target = ptr;
 	node_t *node = target->next;
@@ -283,11 +256,8 @@ void *sort(node_t* ptr) {
 			target->next = node->next;
 			node->next = target;
 		}
-		if (DEBUG) printf("first node @ %p with size %lu and points to %p\n", node, node->size, node->next);
-		if (DEBUG) printf("second node @ %p with size %lu and points to %p\n", target, target->size, target->next);
 		if (first == 0) {
 			theHead = node;
-			if (DEBUG) printf("return node @ %p with size %lu and points to %p\n", ptr, ptr->size, ptr->next);
 		}
 		node = node->next;
 		first++;

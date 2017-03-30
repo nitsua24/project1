@@ -231,6 +231,7 @@ int main(int argc, char *argv[])
 
         // Reset heap
         destroy_heap();
+	printf("Setting up and testing coalesce...\n");
         // TEST 5: Test alloc, free, coalesce, alloc
         ptr[0] = alloc_check(512);
         ptr[1] = alloc_check(512);

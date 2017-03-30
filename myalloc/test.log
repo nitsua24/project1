@@ -1,0 +1,379 @@
+sizes:
+void *:		8
+long unsigned:	8
+node_t:		16
+header_t:	16
+
+Trying to allocate some memory.
+*** Heap is NULL: Initializing ***
+heap: 0x179c010
+[node @ 0x179c010 | free region @ 0x179c020 size: 4080 next: (nil)]
+Going to do allocation.
+Before allocation, freelist header @ 0x179c010 with size 4080
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 4080
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x179c010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a0010 with size 3040 and points to (nil)
+Returning pointer: 0x179c020
+__head is now @ 0x17a0010
+Allocation of size 1024 succeeded @ 0x179c020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a0010 with size 3040
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 3040
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x17a0010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a4010 with size 2000 and points to (nil)
+Returning pointer: 0x17a0020
+__head is now @ 0x17a4010
+Allocation of size 1024 succeeded @ 0x17a0020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a4010 with size 2000
+Before allocation, prev is NULL
+req_size is 512 and prev->size is 2000
+After allocation:
+We wanted to reserve 512 bites
+There is reserved space @ 0x17a4010 with size 512 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a6010 with size 1472 and points to (nil)
+Returning pointer: 0x17a4020
+__head is now @ 0x17a6010
+Allocation of size 512 succeeded @ 0x17a4020!
+Test 1: Simple Allocation is Good :)
+
+Trying to allocate some memory.
+*** Heap is NULL: Initializing ***
+heap: 0x179c010
+[node @ 0x179c010 | free region @ 0x179c020 size: 4080 next: (nil)]
+Going to do allocation.
+Before allocation, freelist header @ 0x179c010 with size 4080
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 4080
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x179c010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a0010 with size 3040 and points to (nil)
+Returning pointer: 0x179c020
+__head is now @ 0x17a0010
+Allocation of size 1024 succeeded @ 0x179c020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a0010 with size 3040
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 3040
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x17a0010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a4010 with size 2000 and points to (nil)
+Returning pointer: 0x17a0020
+__head is now @ 0x17a4010
+Allocation of size 1024 succeeded @ 0x17a0020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a4010 with size 2000
+Before allocation, prev is NULL
+The prev is now @ 0x17a4010 with size 2000 and points to (nil)
+listitem is NULL
+req_size is 3000 and prev->size is 2000
+Returning pointer: (nil)
+__head is now @ 0x17a4010
+!!! Allocation of size 3000 failed!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a4010 with size 2000
+Before allocation, prev is NULL
+req_size is 512 and prev->size is 2000
+After allocation:
+We wanted to reserve 512 bites
+There is reserved space @ 0x17a4010 with size 512 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a6010 with size 1472 and points to (nil)
+Returning pointer: 0x17a4020
+__head is now @ 0x17a6010
+Allocation of size 512 succeeded @ 0x17a4020!
+Test 2: Advanced Allocation is Good :)
+
+Trying to allocate some memory.
+*** Heap is NULL: Initializing ***
+heap: 0x179c010
+[node @ 0x179c010 | free region @ 0x179c020 size: 4080 next: (nil)]
+Going to do allocation.
+Before allocation, freelist header @ 0x179c010 with size 4080
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 4080
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x179c010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a0010 with size 3040 and points to (nil)
+Returning pointer: 0x179c020
+__head is now @ 0x17a0010
+Allocation of size 1024 succeeded @ 0x179c020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a0010 with size 3040
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 3040
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x17a0010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a4010 with size 2000 and points to (nil)
+Returning pointer: 0x17a0020
+__head is now @ 0x17a4010
+Allocation of size 1024 succeeded @ 0x17a0020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a4010 with size 2000
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 2000
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x17a4010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a8010 with size 960 and points to (nil)
+Returning pointer: 0x17a4020
+__head is now @ 0x17a8010
+Allocation of size 1024 succeeded @ 0x17a4020!
+
+In myfree with pointer 0x17a0020
+[header_t @ 0x17a0010 | buffer @ 0x17a0020 size: 1024 magic: 10c0beefbad1dea5]
+Test 3: Simple Free is Good :)
+
+Trying to allocate some memory.
+*** Heap is NULL: Initializing ***
+heap: 0x179c010
+[node @ 0x179c010 | free region @ 0x179c020 size: 4080 next: (nil)]
+Going to do allocation.
+Before allocation, freelist header @ 0x179c010 with size 4080
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 4080
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x179c010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a0010 with size 3040 and points to (nil)
+Returning pointer: 0x179c020
+__head is now @ 0x17a0010
+Allocation of size 1024 succeeded @ 0x179c020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a0010 with size 3040
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 3040
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x17a0010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a4010 with size 2000 and points to (nil)
+Returning pointer: 0x17a0020
+__head is now @ 0x17a4010
+Allocation of size 1024 succeeded @ 0x17a0020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a4010 with size 2000
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 2000
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x17a4010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a8010 with size 960 and points to (nil)
+Returning pointer: 0x17a4020
+__head is now @ 0x17a8010
+Allocation of size 1024 succeeded @ 0x17a4020!
+
+In myfree with pointer 0x17a0020
+[header_t @ 0x17a0010 | buffer @ 0x17a0020 size: 1024 magic: 10c0beefbad1dea5]
+
+In myfree with pointer 0x17a0020
+[header_t @ 0x17a0010 | buffer @ 0x17a0020 size: 1024 magic: 017a8010]
+Header is missing its magic number!!
+It should be '10c0beefbad1dea5'
+But it is '017a8010'
+The heap is corrupt!
+Test 4: If you saw the message '...The heap is corrupt!' above then,
+Test 4: Double Free is Good :)
+Setting up and testing coalesce...
+
+Trying to allocate some memory.
+*** Heap is NULL: Initializing ***
+heap: 0x179c010
+[node @ 0x179c010 | free region @ 0x179c020 size: 4080 next: (nil)]
+Going to do allocation.
+Before allocation, freelist header @ 0x179c010 with size 4080
+Before allocation, prev is NULL
+req_size is 512 and prev->size is 4080
+After allocation:
+We wanted to reserve 512 bites
+There is reserved space @ 0x179c010 with size 512 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x179e010 with size 3552 and points to (nil)
+Returning pointer: 0x179c020
+__head is now @ 0x179e010
+Allocation of size 512 succeeded @ 0x179c020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x179e010 with size 3552
+Before allocation, prev is NULL
+req_size is 512 and prev->size is 3552
+After allocation:
+We wanted to reserve 512 bites
+There is reserved space @ 0x179e010 with size 512 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a0010 with size 3024 and points to (nil)
+Returning pointer: 0x179e020
+__head is now @ 0x17a0010
+Allocation of size 512 succeeded @ 0x179e020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a0010 with size 3024
+Before allocation, prev is NULL
+req_size is 512 and prev->size is 3024
+After allocation:
+We wanted to reserve 512 bites
+There is reserved space @ 0x17a0010 with size 512 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a2010 with size 2496 and points to (nil)
+Returning pointer: 0x17a0020
+__head is now @ 0x17a2010
+Allocation of size 512 succeeded @ 0x17a0020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a2010 with size 2496
+Before allocation, prev is NULL
+req_size is 2048 and prev->size is 2496
+After allocation:
+We wanted to reserve 2048 bites
+There is reserved space @ 0x17a2010 with size 2048 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17aa010 with size 432 and points to (nil)
+Returning pointer: 0x17a2020
+__head is now @ 0x17aa010
+Allocation of size 2048 succeeded @ 0x17a2020!
+
+In myfree with pointer 0x179e020
+[header_t @ 0x179e010 | buffer @ 0x179e020 size: 512 magic: 10c0beefbad1dea5]
+
+In myfree with pointer 0x17a0020
+[header_t @ 0x17a0010 | buffer @ 0x17a0020 size: 512 magic: 10c0beefbad1dea5]
+Test 5.1: Coalesce is Good so far :)
+In coalesce freelist...
+UNsorted head is @ 0x17a0010 with size 512 and points to 0x179e010
+first node @ 0x179e010 with size 512 and points to 0x17a0010
+second node @ 0x17a0010 with size 512 and points to 0x17aa010
+return node @ 0x17a0010 with size 512 and points to 0x17aa010
+first node @ 0x17a0010 with size 512 and points to 0x17aa010
+second node @ 0x17a0010 with size 512 and points to 0x17aa010
+sorted head is @ 0x179e010 with size 512 and points to 0x17a0010
+target + size * 16 = 24772624 and node = 24772624
+coalesced space is  @ 0x179e010 with size 1040 and points to 0x17aa010
+Test 5.2: Coalesce is Good so far :)
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x179e010 with size 1040
+Before allocation, prev is NULL
+req_size is 1000 and prev->size is 1040
+After allocation:
+We wanted to reserve 1000 bites
+There is reserved space @ 0x179e010 with size 1000 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a1e90 with size 24 and points to 0x17aa010
+Returning pointer: 0x179e020
+__head is now @ 0x17a1e90
+Allocation of size 1000 succeeded @ 0x179e020!
+Test 5.3: Coalesce is Good :)
+
+Trying to allocate some memory.
+*** Heap is NULL: Initializing ***
+heap: 0x179c010
+[node @ 0x179c010 | free region @ 0x179c020 size: 4080 next: (nil)]
+Going to do allocation.
+Before allocation, freelist header @ 0x179c010 with size 4080
+Before allocation, prev is NULL
+req_size is 512 and prev->size is 4080
+After allocation:
+We wanted to reserve 512 bites
+There is reserved space @ 0x179c010 with size 512 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x179e010 with size 3552 and points to (nil)
+Returning pointer: 0x179c020
+__head is now @ 0x179e010
+Allocation of size 512 succeeded @ 0x179c020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x179e010 with size 3552
+Before allocation, prev is NULL
+req_size is 512 and prev->size is 3552
+After allocation:
+We wanted to reserve 512 bites
+There is reserved space @ 0x179e010 with size 512 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a0010 with size 3024 and points to (nil)
+Returning pointer: 0x179e020
+__head is now @ 0x17a0010
+Allocation of size 512 succeeded @ 0x179e020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a0010 with size 3024
+Before allocation, prev is NULL
+req_size is 512 and prev->size is 3024
+After allocation:
+We wanted to reserve 512 bites
+There is reserved space @ 0x17a0010 with size 512 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a2010 with size 2496 and points to (nil)
+Returning pointer: 0x17a0020
+__head is now @ 0x17a2010
+Allocation of size 512 succeeded @ 0x17a0020!
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x17a2010 with size 2496
+Before allocation, prev is NULL
+req_size is 2048 and prev->size is 2496
+After allocation:
+We wanted to reserve 2048 bites
+There is reserved space @ 0x17a2010 with size 2048 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17aa010 with size 432 and points to (nil)
+Returning pointer: 0x17a2020
+__head is now @ 0x17aa010
+Allocation of size 2048 succeeded @ 0x17a2020!
+
+In myfree with pointer 0x179e020
+[header_t @ 0x179e010 | buffer @ 0x179e020 size: 512 magic: 10c0beefbad1dea5]
+
+In myfree with pointer 0x17a0020
+[header_t @ 0x17a0010 | buffer @ 0x17a0020 size: 512 magic: 10c0beefbad1dea5]
+Test 6.1: Advanced Coalesce is Good so far :)
+In coalesce freelist...
+UNsorted head is @ 0x17a0010 with size 512 and points to 0x179e010
+first node @ 0x179e010 with size 512 and points to 0x17a0010
+second node @ 0x17a0010 with size 512 and points to 0x17aa010
+return node @ 0x17a0010 with size 512 and points to 0x17aa010
+first node @ 0x17a0010 with size 512 and points to 0x17aa010
+second node @ 0x17a0010 with size 512 and points to 0x17aa010
+sorted head is @ 0x179e010 with size 512 and points to 0x17a0010
+target + size * 16 = 24772624 and node = 24772624
+coalesced space is  @ 0x179e010 with size 1040 and points to 0x17aa010
+Test 6.2: Advanced Coalesce is Good so far :)
+
+Trying to allocate some memory.
+Going to do allocation.
+Before allocation, freelist header @ 0x179e010 with size 1040
+Before allocation, prev is NULL
+req_size is 1024 and prev->size is 1040
+After allocation:
+We wanted to reserve 1024 bites
+There is reserved space @ 0x179e010 with size 1024 and magic 10c0beefbad1dea5
+The freelist header is now @ 0x17a2010 with size 0 and points to 0x17aa010
+Returning pointer: 0x179e020
+__head is now @ 0x17a2010
+Allocation of size 1024 succeeded @ 0x179e020!
+Header Magic number not correct.
+Found Incorrect Header @ ptr[3]
+Test 6.3: Failed, Coalesce is not working :(
